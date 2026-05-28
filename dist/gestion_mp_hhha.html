@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Gestión MP · HHHA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* === VARIABLES === */
+:root {
+  --c-papel: #f4f0e6;
+  --c-papel-2: #ece6d6;
+  --c-papel-3: #ddd4be;
+  --c-tinta: #1c1814;
+  --c-tinta-2: #3a342c;
+  --c-tinta-3: #6b6354;
+  --c-verde: #2d4a3e;
+  --c-verde-2: #426959;
+  --c-operativo: #2d4a3e;
+  --c-no-operativo: #a8472b;
+  --c-st: #b88224;
+  --c-baja: #6b6354;
+  --c-linea: #c8bfa5;
+  --c-linea-2: #b3a98a;
+  --c-foco: #2d4a3e;
+  --r-card: 2px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --ff-display: "Fraunces", Georgia, serif;
+  --ff-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --ff-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-lg: 15px;
+  --fs-xl: 20px;
+  --fs-xxl: 28px;
+}
+
+/* === RESET === */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  background: var(--c-papel);
+  color: var(--c-tinta);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-md);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; cursor: pointer; }
+
+/* === HEADER === */
+.app-header {
+  border-bottom: 1px solid var(--c-linea);
+  background: var(--c-papel);
+  padding: var(--s-3) var(--s-5);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-5);
+}
+.app-title {
+  font-family: var(--ff-display);
+  font-weight: 600;
+  font-size: var(--fs-xl);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.app-title .pipe { color: var(--c-tinta-3); margin: 0 6px; font-weight: 400; }
+.app-title .sub {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-sm);
+  color: var(--c-tinta-3);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.app-actions {
+  margin-left: auto;
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+}
+.btn {
+  background: transparent;
+  border: 1px solid var(--c-linea-2);
+  color: var(--c-tinta);
+  padding: 6px 12px;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.02em;
+  border-radius: var(--r-card);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.btn:hover { background: var(--c-papel-2); }
+.btn:focus-visible { outline: 2px solid var(--c-foco); outline-offset: 1px; }
+.btn-rec {
+  border-color: var(--c-no-operativo);
+  color: var(--c-no-operativo);
+}
+.btn-rec.on {
+  background: var(--c-no-operativo);
+  color: var(--c-papel);
+}
+.btn-rec .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-no-operativo);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.btn-rec.on .dot { background: var(--c-papel); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0.35; } }
+
+/* === NAV === */
+.app-nav {
+  background: var(--c-papel);
+  border-bottom: 1px solid var(--c-linea);
+  padding: 0 var(--s-5);
+  display: flex;
+  gap: var(--s-1);
+}
+.nav-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--c-tinta-2);
+  padding: 10px 14px 9px;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.nav-tab:hover { color: var(--c-tinta); }
+.nav-tab.active {
+  color: var(--c-verde);
+  border-bottom-color: var(--c-verde);
+  font-weight: 600;
+}
+.nav-tab .count {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-tinta-3);
+  margin-left: 6px;
+}
+
+/* === MAIN === */
+.app-main {
+  padding: var(--s-5);
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.view { display: none; }
+.view.active { display: block; }
+.view-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+  border-bottom: 1px solid var(--c-linea);
+  padding-bottom: var(--s-3);
+}
+.view-title {
+  font-family: var(--ff-display);
+  font-weight: 600;
+  font-size: var(--fs-xxl);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+.view-sub {
+  font-size: var(--fs-sm);
+  color: var(--c-tinta-3);
+  margin-left: auto;
+}
+.placeholder {
+  border: 1px dashed var(--c-linea-2);
+  padding: var(--s-6);
+  text-align: center;
+  color: var(--c-tinta-3);
+  font-family: var(--ff-display);
+  font-style: italic;
+}
+
+/* === FILTROS === */
+.filtros {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: var(--s-3);
+}
+.f-grupo { display: flex; flex-direction: column; gap: 2px; }
+.f-label {
+  font-size: var(--fs-xs);
+  color: var(--c-tinta-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.f-input, .f-select {
+  background: var(--c-papel);
+  border: 1px solid var(--c-linea-2);
+  color: var(--c-tinta);
+  padding: 5px 8px;
+  font: inherit;
+  font-size: var(--fs-md);
+  border-radius: var(--r-card);
+  min-width: 160px;
+}
+.f-input:focus, .f-select:focus { outline: 2px solid var(--c-foco); outline-offset: 0; }
+.f-search { min-width: 280px; }
+.f-clear {
+  background: none;
+  border: none;
+  color: var(--c-tinta-3);
+  font-size: var(--fs-sm);
+  text-decoration: underline;
+  padding: 6px 0;
+}
+.f-resultado {
+  margin-left: auto;
+  font-family: var(--ff-mono);
+  font-size: var(--fs-sm);
+  color: var(--c-tinta-3);
+}
+
+/* === TABLA === */
+.tabla-wrap {
+  border: 1px solid var(--c-linea);
+  background: var(--c-papel);
+  overflow: auto;
+  max-height: calc(100vh - 240px);
+}
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-md);
+}
+.tabla thead th {
+  position: sticky;
+  top: 0;
+  background: var(--c-papel-2);
+  color: var(--c-tinta-2);
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--c-linea-2);
+  white-space: nowrap;
+}
+.tabla tbody td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--c-papel-2);
+  vertical-align: middle;
+}
+.tabla tbody tr:hover { background: var(--c-papel-2); cursor: pointer; }
+.tabla .col-id, .tabla .col-serie { font-family: var(--ff-mono); font-size: var(--fs-sm); }
+.tabla .col-estado { white-space: nowrap; }
+.tabla .vacio td {
+  text-align: center;
+  padding: var(--s-5);
+  color: var(--c-tinta-3);
+  font-style: italic;
+}
+
+/* === ESTADOS (badges) === */
+.estado {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  background: var(--c-papel);
+}
+.estado.op { color: var(--c-operativo); }
+.estado.no { color: var(--c-no-operativo); }
+.estado.st { color: var(--c-st); }
+.estado.baja { color: var(--c-baja); }
+
+/* === MODAL HOJA DE VIDA === */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(28, 24, 20, 0.4);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  z-index: 100;
+  overflow-y: auto;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--c-papel);
+  border: 1px solid var(--c-linea);
+  width: min(960px, 100%);
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(28, 24, 20, 0.18);
+}
+.modal-head {
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--c-linea);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+.modal-head h2 {
+  font-family: var(--ff-display);
+  font-weight: 600;
+  font-size: var(--fs-xl);
+  margin: 0;
+}
+.modal-head .inv {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-sm);
+  color: var(--c-tinta-3);
+}
+.modal-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--c-tinta-3);
+  line-height: 1;
+  padding: 4px 8px;
+}
+.modal-close:hover { color: var(--c-tinta); }
+.modal-body {
+  padding: var(--s-4) var(--s-5);
+  overflow-y: auto;
+}
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-2) var(--s-4);
+  margin-bottom: var(--s-5);
+}
+.meta-item .k {
+  font-size: var(--fs-xs);
+  color: var(--c-tinta-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.meta-item .v {
+  font-size: var(--fs-md);
+  color: var(--c-tinta);
+}
+.meta-item.mono .v { font-family: var(--ff-mono); font-size: var(--fs-sm); }
+.section-title {
+  font-family: var(--ff-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  margin: var(--s-5) 0 var(--s-2);
+  padding-bottom: var(--s-1);
+  border-bottom: 1px solid var(--c-linea);
+}
+.bitacora { list-style: none; padding: 0; margin: 0; }
+.bitacora li {
+  padding: var(--s-2) 0;
+  border-bottom: 1px dotted var(--c-linea-2);
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: var(--s-3);
+  align-items: baseline;
+}
+.bitacora .fecha { font-family: var(--ff-mono); font-size: var(--fs-sm); color: var(--c-tinta-3); }
+.bitacora .tipo { font-weight: 600; }
+.bitacora .desc { color: var(--c-tinta-2); }
+.bitacora .folio { font-family: var(--ff-mono); font-size: var(--fs-xs); color: var(--c-tinta-3); }
+.pendientes-list { list-style: none; padding: 0; margin: 0; }
+.pendientes-list li {
+  padding: var(--s-2) 0;
+  display: grid;
+  grid-template-columns: 90px 90px 1fr 100px;
+  gap: var(--s-3);
+  align-items: baseline;
+  border-bottom: 1px dotted var(--c-linea-2);
+}
+.pendientes-list .est {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+.pendientes-list .est.abierto { color: var(--c-no-operativo); }
+.pendientes-list .est.creado { color: var(--c-st); }
+.pendientes-list .est.cerrado { color: var(--c-operativo); }
+.vacio-inline {
+  color: var(--c-tinta-3);
+  font-style: italic;
+  font-size: var(--fs-sm);
+}
+
+/* === TOAST === */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--c-tinta);
+  color: var(--c-papel);
+  padding: 10px 16px;
+  font-size: var(--fs-sm);
+  border-radius: var(--r-card);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 200;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1 class="app-title">
+    Gestión MP <span class="pipe">·</span> HHHA
+    <span class="sub">Mantenimiento de equipos biomédicos</span>
+  </h1>
+  <div class="app-actions">
+    <button class="btn" id="btn-import">Importar JSON</button>
+    <input type="file" id="file-import" accept="application/json" style="display:none">
+    <button class="btn" id="btn-export">Exportar JSON</button>
+    <button class="btn btn-rec" id="btn-rec" title="Grabar uso (próximamente)" disabled>
+      <span class="dot"></span>Grabar
+    </button>
+  </div>
+</header>
+
+<nav class="app-nav" id="app-nav">
+  <button class="nav-tab" data-tab="dashboard">Dashboard</button>
+  <button class="nav-tab" data-tab="programacion">Programación MP</button>
+  <button class="nav-tab" data-tab="eventos">Eventos</button>
+  <button class="nav-tab active" data-tab="equipos">Equipos <span class="count" id="cnt-equipos"></span></button>
+  <button class="nav-tab" data-tab="pendientes">Pendientes <span class="count" id="cnt-pendientes"></span></button>
+</nav>
+
+<main class="app-main">
+
+  <!-- DASHBOARD -->
+  <section class="view" data-view="dashboard">
+    <div class="view-head">
+      <h2 class="view-title">Dashboard</h2>
+      <span class="view-sub">KPIs, alertas, MP del mes</span>
+    </div>
+    <div class="placeholder">Vista en construcción · próximo sub-ajuste</div>
+  </section>
+
+  <!-- PROGRAMACIÓN -->
+  <section class="view" data-view="programacion">
+    <div class="view-head">
+      <h2 class="view-title">Programación MP 2026</h2>
+      <span class="view-sub">Gantt anual filtrable</span>
+    </div>
+    <div class="placeholder">Vista en construcción · próximo sub-ajuste</div>
+  </section>
+
+  <!-- EVENTOS -->
+  <section class="view" data-view="eventos">
+    <div class="view-head">
+      <h2 class="view-title">Eventos</h2>
+      <span class="view-sub">Bitácora cronológica completa</span>
+    </div>
+    <div class="placeholder">Vista en construcción · próximo sub-ajuste</div>
+  </section>
+
+  <!-- EQUIPOS -->
+  <section class="view active" data-view="equipos">
+    <div class="view-head">
+      <h2 class="view-title">Equipos</h2>
+      <span class="view-sub">Inventario completo</span>
+    </div>
+
+    <div class="filtros">
+      <div class="f-grupo">
+        <label class="f-label" for="f-busqueda">Búsqueda libre</label>
+        <input type="search" class="f-input f-search" id="f-busqueda" placeholder="N° inventario, equipo, marca, modelo, serie…">
+      </div>
+      <div class="f-grupo">
+        <label class="f-label" for="f-familia">Familia</label>
+        <select class="f-select" id="f-familia">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div class="f-grupo">
+        <label class="f-label" for="f-servicio">Servicio</label>
+        <select class="f-select" id="f-servicio">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="f-grupo">
+        <label class="f-label" for="f-estado">Estado</label>
+        <select class="f-select" id="f-estado">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <button class="f-clear" id="f-clear">Limpiar filtros</button>
+      <span class="f-resultado" id="f-resultado"></span>
+    </div>
+
+    <div class="tabla-wrap">
+      <table class="tabla" id="tabla-equipos">
+        <thead>
+          <tr>
+            <th>N° Inv.</th>
+            <th>Equipo</th>
+            <th>Familia</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Serie</th>
+            <th>Servicio</th>
+            <th>Ubicación</th>
+            <th class="col-estado">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-equipos"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PENDIENTES -->
+  <section class="view" data-view="pendientes">
+    <div class="view-head">
+      <h2 class="view-title">Pendientes</h2>
+      <span class="view-sub">Gestión con estado y compromisos</span>
+    </div>
+    <div class="placeholder">Vista en construcción · próximo sub-ajuste</div>
+  </section>
+
+</main>
+
+<!-- MODAL HOJA DE VIDA -->
+<div class="modal-backdrop" id="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-labelledby="modal-titulo">
+    <div class="modal-head">
+      <h2 id="modal-titulo">—</h2>
+      <span class="inv" id="modal-inv">—</span>
+      <button class="modal-close" id="modal-close" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- DATOS EMBEBIDOS -->
+<script type="application/json" id="data-json">
+{
+  "version": "1.0",
+  "meta": {
+    "hospital": "Hospital Hernán Henríquez Aravena",
+    "ciudad": "Temuco",
+    "anio_programacion": 2026,
+    "responsable": "Cristian",
+    "generado": "2026-05-28",
+    "nota": "Datos de prueba — no reemplazan fuentes oficiales."
+  },
+  "catalogos": {
+    "familias": ["Ventilación","Monitorización","Desfibrilación","Anestesia","Diálisis","Infusión","Electrofisiología"],
+    "servicios": ["UCI Adultos","UCI Pediátrica","Neonatología","Pabellón Central","Urgencia Adultos","Urgencia Pediátrica","Diálisis","Medicina Interna"],
+    "estados_equipo": ["Operativo","No operativo","Servicio técnico","Baja"]
+  },
+  "equipos": [
+    {"id":"2-117816","n_carpeta":"045","n_inventario":"2-117816","n_serie":"ARYL-0231","equipo":"Ventilador mecánico","familia":"Ventilación","marca":"Dräger","modelo":"Evita V300","anio":2019,"servicio":"UCI Adultos","unidad":"UCI-A Box 3","ubicacion":"Piso 4, ala norte","estado":"Operativo","frecuencia_mp":"Semestral"},
+    {"id":"2-117902","n_carpeta":"046","n_inventario":"2-117902","n_serie":"HAM-T1-4421","equipo":"Ventilador mecánico","familia":"Ventilación","marca":"Hamilton","modelo":"T1","anio":2021,"servicio":"UCI Pediátrica","unidad":"UCI-P Box 1","ubicacion":"Piso 4, ala sur","estado":"Servicio técnico","frecuencia_mp":"Anual"},
+    {"id":"2-110045","n_carpeta":"012","n_inventario":"2-110045","n_serie":"MR-IPM12-882","equipo":"Monitor multiparámetro","familia":"Monitorización","marca":"Mindray","modelo":"iPM-12","anio":2018,"servicio":"UCI Adultos","unidad":"UCI-A Box 5","ubicacion":"Piso 4, ala norte","estado":"Operativo","frecuencia_mp":"Anual"},
+    {"id":"2-110046","n_carpeta":"013","n_inventario":"2-110046","n_serie":"PH-IV-9921","equipo":"Monitor multiparámetro","familia":"Monitorización","marca":"Philips","modelo":"IntelliVue MX450","anio":2020,"servicio":"Pabellón Central","unidad":"Pabellón 2","ubicacion":"Piso 2","estado":"Operativo","frecuencia_mp":"Anual"},
+    {"id":"2-122310","n_carpeta":"078","n_inventario":"2-122310","n_serie":"MAS-SET-1102","equipo":"Oxímetro de pulso","familia":"Monitorización","marca":"Masimo","modelo":"Radical-7","anio":2017,"servicio":"Urgencia Adultos","unidad":"Box reanimación","ubicacion":"Piso 1","estado":"No operativo","frecuencia_mp":"Anual"},
+    {"id":"2-115501","n_carpeta":"031","n_inventario":"2-115501","n_serie":"ZOLL-RS-770","equipo":"Desfibrilador","familia":"Desfibrilación","marca":"Zoll","modelo":"R Series","anio":2019,"servicio":"Urgencia Adultos","unidad":"Carro de paro","ubicacion":"Piso 1","estado":"Operativo","frecuencia_mp":"Semestral"},
+    {"id":"2-115502","n_carpeta":"032","n_inventario":"2-115502","n_serie":"PHHS-FRX-554","equipo":"DEA","familia":"Desfibrilación","marca":"Philips","modelo":"HeartStart FRx","anio":2022,"servicio":"Medicina Interna","unidad":"Pasillo principal","ubicacion":"Piso 3","estado":"Operativo","frecuencia_mp":"Anual"},
+    {"id":"2-120033","n_carpeta":"055","n_inventario":"2-120033","n_serie":"DRG-PRIM-1199","equipo":"Máquina de anestesia","familia":"Anestesia","marca":"Dräger","modelo":"Primus","anio":2018,"servicio":"Pabellón Central","unidad":"Pabellón 4","ubicacion":"Piso 2","estado":"Operativo","frecuencia_mp":"Semestral"},
+    {"id":"2-125550","n_carpeta":"088","n_inventario":"2-125550","n_serie":"FRS-4008-3321","equipo":"Máquina de hemodiálisis","familia":"Diálisis","marca":"Fresenius","modelo":"4008S","anio":2017,"servicio":"Diálisis","unidad":"Sala 1","ubicacion":"Piso 1","estado":"Servicio técnico","frecuencia_mp":"Semestral"},
+    {"id":"2-125551","n_carpeta":"089","n_inventario":"2-125551","n_serie":"FRS-4008-3322","equipo":"Máquina de hemodiálisis","familia":"Diálisis","marca":"Fresenius","modelo":"4008S","anio":2017,"servicio":"Diálisis","unidad":"Sala 1","ubicacion":"Piso 1","estado":"Operativo","frecuencia_mp":"Semestral"},
+    {"id":"2-118870","n_carpeta":"061","n_inventario":"2-118870","n_serie":"BB-INF-5521","equipo":"Bomba de infusión","familia":"Infusión","marca":"B. Braun","modelo":"Infusomat Space","anio":2020,"servicio":"UCI Adultos","unidad":"UCI-A Box 2","ubicacion":"Piso 4, ala norte","estado":"Operativo","frecuencia_mp":"Anual"},
+    {"id":"2-118871","n_carpeta":"062","n_inventario":"2-118871","n_serie":"BB-INF-5522","equipo":"Bomba de infusión","familia":"Infusión","marca":"Baxter","modelo":"Sigma Spectrum","anio":2021,"servicio":"Neonatología","unidad":"Sala A","ubicacion":"Piso 3","estado":"Operativo","frecuencia_mp":"Anual"},
+    {"id":"2-130001","n_carpeta":"099","n_inventario":"2-130001","n_serie":"SCH-CAR-7701","equipo":"Electrocardiógrafo","familia":"Electrofisiología","marca":"Schiller","modelo":"Cardiovit AT-101","anio":2020,"servicio":"Medicina Interna","unidad":"Sala procedimientos","ubicacion":"Piso 3","estado":"Operativo","frecuencia_mp":"Anual"}
+  ],
+  "eventos": [
+    {"id":"ev-001","equipo_id":"2-117902","fecha":"2026-02-10","tipo":"Solicitud de trabajo","folio":"SIGEM-2026-0411","descripcion":"Falla en válvula expiratoria reportada por UCI-P.","estado_resultante":"No operativo","responsable":"Ing. M. Soto"},
+    {"id":"ev-002","equipo_id":"2-117902","fecha":"2026-02-18","tipo":"Hoja de envío","folio":"ENV-2026-014","descripcion":"Enviado a servicio técnico Hamilton para diagnóstico.","estado_resultante":"Servicio técnico","responsable":"Cristian"},
+    {"id":"ev-003","equipo_id":"2-125550","fecha":"2026-03-05","tipo":"Solicitud de trabajo","folio":"SIGEM-2026-0588","descripcion":"Equipo no inicia ciclo. Pantalla con error E-22.","estado_resultante":"No operativo","responsable":"Ing. R. Pérez"},
+    {"id":"ev-004","equipo_id":"2-125550","fecha":"2026-03-12","tipo":"Hoja de envío","folio":"ENV-2026-019","descripcion":"Enviado a servicio técnico Fresenius.","estado_resultante":"Servicio técnico","responsable":"Cristian"},
+    {"id":"ev-005","equipo_id":"2-122310","fecha":"2026-04-02","tipo":"Solicitud de trabajo","folio":"SIGEM-2026-0721","descripcion":"Sensor SpO2 no entrega lectura confiable.","estado_resultante":"No operativo","responsable":"Ing. M. Soto"},
+    {"id":"ev-006","equipo_id":"2-117816","fecha":"2026-03-22","tipo":"Mantenimiento preventivo","folio":"MP-2026-031","descripcion":"MP semestral ejecutado por empresa externa. Sin observaciones.","estado_resultante":"Operativo","responsable":"Empresa Vitalmed / Ing. P. Núñez"},
+    {"id":"ev-007","equipo_id":"2-110045","fecha":"2026-01-15","tipo":"Mantenimiento preventivo","folio":"MP-2026-007","descripcion":"MP anual interno. Recomendación: reemplazar cable ECG en próximo ciclo.","estado_resultante":"Operativo","responsable":"SEC interno / Ing. F. Vidal"},
+    {"id":"ev-008","equipo_id":"2-120033","fecha":"2026-02-28","tipo":"Mantenimiento preventivo","folio":"MP-2026-019","descripcion":"MP semestral. Sin observaciones.","estado_resultante":"Operativo","responsable":"Empresa Dräger / Ing. C. Rojas"}
+  ],
+  "pendientes": [
+    {"id":"pd-001","equipo_id":"2-110045","fecha_creacion":"2026-01-20","fecha_compromiso":"2026-02-20","descripcion":"Falta firma del jefe de equipo médico en protocolo de MP.","estado":"abierto"},
+    {"id":"pd-002","equipo_id":"2-117816","fecha_creacion":"2026-03-25","fecha_compromiso":"2026-04-15","descripcion":"Transcribir observaciones del informe técnico al sistema.","estado":"abierto"},
+    {"id":"pd-003","equipo_id":"2-117902","fecha_creacion":"2026-02-19","fecha_compromiso":"2026-03-19","descripcion":"Solicitar cotización a Hamilton para reparación.","estado":"creado"}
+  ],
+  "programacion": [
+    {"equipo_id":"2-117816","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"X","r":"Si"},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"X","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-117902","meses":{"ene":{"p":"","r":""},"feb":{"p":"X","r":"C2"},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-110045","meses":{"ene":{"p":"X","r":"Si"},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-110046","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"X","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-122310","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"X","r":"C3"},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-115501","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"X","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"X","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-115502","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"X","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-120033","meses":{"ene":{"p":"","r":""},"feb":{"p":"X","r":"Si"},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"X","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-125550","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"X","r":"C2"},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-125551","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"X","r":"Si"},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"X","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-118870","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"X","r":""},"jun":{"p":"","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-118871","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"X","r":""},"jul":{"p":"","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}},
+    {"equipo_id":"2-130001","meses":{"ene":{"p":"","r":""},"feb":{"p":"","r":""},"mar":{"p":"","r":""},"abr":{"p":"","r":""},"may":{"p":"","r":""},"jun":{"p":"","r":""},"jul":{"p":"X","r":""},"ago":{"p":"","r":""},"sep":{"p":"","r":""},"oct":{"p":"","r":""},"nov":{"p":"","r":""},"dic":{"p":"","r":""}}}
+  ]
+}
+</script>
+
+<script>
+"use strict";
+
+// === ESTADO GLOBAL ===
+let DATA = null;
+const state = {
+  tab: "equipos",
+  filtros: { busqueda: "", familia: "", servicio: "", estado: "" }
+};
+
+// === UTILIDADES ===
+function esc(s) {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return document.querySelectorAll(sel); }
+
+function debounce(fn, ms) {
+  let t;
+  return function () {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, arguments), ms);
+  };
+}
+
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+function estadoClass(estado) {
+  switch (estado) {
+    case "Operativo": return "op";
+    case "No operativo": return "no";
+    case "Servicio técnico": return "st";
+    case "Baja": return "baja";
+    default: return "";
+  }
+}
+
+// === CARGA DE DATOS ===
+function cargarDatos() {
+  const raw = document.getElementById("data-json").textContent;
+  try {
+    DATA = JSON.parse(raw);
+  } catch (e) {
+    console.error("Error parseando datos embebidos:", e);
+    alert("No se pudieron cargar los datos del programa. Avísale a quien lo desarrolla.");
+    DATA = { version: "1.0", equipos: [], eventos: [], pendientes: [], programacion: [], catalogos: { familias: [], servicios: [], estados_equipo: [] } };
+  }
+}
+
+// === NAVEGACIÓN ===
+function cambiarTab(tab) {
+  state.tab = tab;
+  $$(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  $$(".view").forEach(v => v.classList.toggle("active", v.dataset.view === tab));
+}
+
+// === EQUIPOS: FILTROS ===
+function poblarFiltros() {
+  const familias = DATA.catalogos?.familias || [];
+  const servicios = DATA.catalogos?.servicios || [];
+  const estados = DATA.catalogos?.estados_equipo || [];
+
+  const selF = $("#f-familia");
+  familias.forEach(f => {
+    const o = document.createElement("option");
+    o.value = f; o.textContent = f;
+    selF.appendChild(o);
+  });
+  const selS = $("#f-servicio");
+  servicios.forEach(s => {
+    const o = document.createElement("option");
+    o.value = s; o.textContent = s;
+    selS.appendChild(o);
+  });
+  const selE = $("#f-estado");
+  estados.forEach(e => {
+    const o = document.createElement("option");
+    o.value = e; o.textContent = e;
+    selE.appendChild(o);
+  });
+}
+
+function filtrarEquipos() {
+  const q = state.filtros.busqueda.trim().toLowerCase();
+  return DATA.equipos.filter(e => {
+    if (state.filtros.familia && e.familia !== state.filtros.familia) return false;
+    if (state.filtros.servicio && e.servicio !== state.filtros.servicio) return false;
+    if (state.filtros.estado && e.estado !== state.filtros.estado) return false;
+    if (!q) return true;
+    const heno = [e.n_inventario, e.n_serie, e.equipo, e.marca, e.modelo, e.servicio, e.ubicacion, e.unidad]
+      .filter(Boolean).join(" ").toLowerCase();
+    return heno.includes(q);
+  });
+}
+
+function renderEquipos() {
+  const lista = filtrarEquipos();
+  const tbody = $("#tbody-equipos");
+  if (lista.length === 0) {
+    tbody.innerHTML = `<tr class="vacio"><td colspan="9">Sin equipos que coincidan con los filtros.</td></tr>`;
+  } else {
+    tbody.innerHTML = lista.map(e => `
+      <tr data-equipo-id="${esc(e.id)}">
+        <td class="col-id">${esc(e.n_inventario)}</td>
+        <td>${esc(e.equipo)}</td>
+        <td>${esc(e.familia)}</td>
+        <td>${esc(e.marca)}</td>
+        <td>${esc(e.modelo)}</td>
+        <td class="col-serie">${esc(e.n_serie)}</td>
+        <td>${esc(e.servicio)}</td>
+        <td>${esc(e.ubicacion)}</td>
+        <td class="col-estado"><span class="estado ${estadoClass(e.estado)}">${esc(e.estado)}</span></td>
+      </tr>
+    `).join("");
+  }
+  $("#f-resultado").textContent = `${lista.length} de ${DATA.equipos.length} equipos`;
+  $("#cnt-equipos").textContent = `(${DATA.equipos.length})`;
+  $("#cnt-pendientes").textContent = `(${(DATA.pendientes || []).filter(p => p.estado !== "cerrado").length})`;
+}
+
+// === HOJA DE VIDA (MODAL) ===
+function abrirHojaDeVida(equipoId) {
+  const e = DATA.equipos.find(x => x.id === equipoId);
+  if (!e) return;
+
+  $("#modal-titulo").textContent = `${e.equipo} · ${e.marca} ${e.modelo}`;
+  $("#modal-inv").textContent = `N° Inv. ${e.n_inventario} · Carpeta ${e.n_carpeta || "—"}`;
+
+  const meta = [
+    ["N° Serie", e.n_serie, true],
+    ["Año", e.anio, false],
+    ["Estado", e.estado, false],
+    ["Frecuencia MP", e.frecuencia_mp, false],
+    ["Servicio", e.servicio, false],
+    ["Unidad", e.unidad, false],
+    ["Ubicación", e.ubicacion, false],
+    ["Familia", e.familia, false]
+  ];
+
+  const metaHTML = `
+    <div class="meta-grid">
+      ${meta.map(([k, v, mono]) => `
+        <div class="meta-item ${mono ? "mono" : ""}">
+          <div class="k">${esc(k)}</div>
+          <div class="v">${k === "Estado" ? `<span class="estado ${estadoClass(v)}">${esc(v)}</span>` : esc(v || "—")}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  const pendientes = (DATA.pendientes || []).filter(p => p.equipo_id === e.id && p.estado !== "cerrado");
+  const pendHTML = `
+    <h3 class="section-title">Pendientes vigentes (${pendientes.length})</h3>
+    ${pendientes.length === 0
+      ? `<div class="vacio-inline">Sin pendientes abiertos.</div>`
+      : `<ul class="pendientes-list">
+          ${pendientes.map(p => `
+            <li>
+              <span class="col-id">${esc(p.fecha_creacion)}</span>
+              <span class="col-id">${esc(p.fecha_compromiso || "—")}</span>
+              <span>${esc(p.descripcion)}</span>
+              <span class="est ${esc(p.estado)}">${esc(p.estado)}</span>
+            </li>`).join("")}
+        </ul>`}
+  `;
+
+  const eventos = (DATA.eventos || [])
+    .filter(ev => ev.equipo_id === e.id)
+    .sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+
+  const eventosHTML = `
+    <h3 class="section-title">Bitácora (${eventos.length})</h3>
+    ${eventos.length === 0
+      ? `<div class="vacio-inline">Sin eventos registrados.</div>`
+      : `<ul class="bitacora">
+          ${eventos.map(ev => `
+            <li>
+              <span class="fecha">${esc(ev.fecha)}</span>
+              <div>
+                <div><span class="tipo">${esc(ev.tipo)}</span> · <span class="desc">${esc(ev.descripcion || "")}</span></div>
+                <div class="folio">${esc(ev.folio || "")}${ev.responsable ? " · " + esc(ev.responsable) : ""}${ev.estado_resultante ? " · " + esc(ev.estado_resultante) : ""}</div>
+              </div>
+              <span></span>
+            </li>`).join("")}
+        </ul>`}
+  `;
+
+  $("#modal-body").innerHTML = metaHTML + pendHTML + eventosHTML;
+  const back = $("#modal-backdrop");
+  back.classList.add("open");
+  back.setAttribute("aria-hidden", "false");
+}
+
+function cerrarModal() {
+  const back = $("#modal-backdrop");
+  back.classList.remove("open");
+  back.setAttribute("aria-hidden", "true");
+}
+
+// === IMPORT / EXPORT JSON ===
+function exportarJSON() {
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const ts = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+  a.href = url;
+  a.download = `gestion_mp_hhha_${ts}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("Estado exportado");
+}
+
+function importarJSON(file) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const obj = JSON.parse(e.target.result);
+      if (!obj || !Array.isArray(obj.equipos)) {
+        throw new Error("El archivo no tiene la estructura esperada (falta 'equipos').");
+      }
+      DATA = obj;
+      $("#f-busqueda").value = "";
+      $("#f-familia").innerHTML = `<option value="">Todas</option>`;
+      $("#f-servicio").innerHTML = `<option value="">Todos</option>`;
+      $("#f-estado").innerHTML = `<option value="">Todos</option>`;
+      state.filtros = { busqueda: "", familia: "", servicio: "", estado: "" };
+      poblarFiltros();
+      renderEquipos();
+      toast(`Importado · ${DATA.equipos.length} equipos`);
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo importar el archivo: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// === LISTENERS ===
+function instalarListeners() {
+  // navegación
+  $("#app-nav").addEventListener("click", ev => {
+    const b = ev.target.closest(".nav-tab");
+    if (b) cambiarTab(b.dataset.tab);
+  });
+
+  // filtros
+  $("#f-busqueda").addEventListener("input", debounce(ev => {
+    state.filtros.busqueda = ev.target.value;
+    renderEquipos();
+  }, 150));
+  $("#f-familia").addEventListener("change", ev => { state.filtros.familia = ev.target.value; renderEquipos(); });
+  $("#f-servicio").addEventListener("change", ev => { state.filtros.servicio = ev.target.value; renderEquipos(); });
+  $("#f-estado").addEventListener("change", ev => { state.filtros.estado = ev.target.value; renderEquipos(); });
+  $("#f-clear").addEventListener("click", () => {
+    state.filtros = { busqueda: "", familia: "", servicio: "", estado: "" };
+    $("#f-busqueda").value = "";
+    $("#f-familia").value = "";
+    $("#f-servicio").value = "";
+    $("#f-estado").value = "";
+    renderEquipos();
+  });
+
+  // click en fila → modal
+  $("#tbody-equipos").addEventListener("click", ev => {
+    const tr = ev.target.closest("tr[data-equipo-id]");
+    if (tr) abrirHojaDeVida(tr.dataset.equipoId);
+  });
+
+  // modal
+  $("#modal-close").addEventListener("click", cerrarModal);
+  $("#modal-backdrop").addEventListener("click", ev => {
+    if (ev.target === ev.currentTarget) cerrarModal();
+  });
+  document.addEventListener("keydown", ev => {
+    if (ev.key === "Escape") cerrarModal();
+  });
+
+  // import / export
+  $("#btn-export").addEventListener("click", exportarJSON);
+  $("#btn-import").addEventListener("click", () => $("#file-import").click());
+  $("#file-import").addEventListener("change", ev => {
+    const file = ev.target.files[0];
+    if (file) importarJSON(file);
+    ev.target.value = "";
+  });
+}
+
+// === INIT ===
+function init() {
+  cargarDatos();
+  poblarFiltros();
+  renderEquipos();
+  instalarListeners();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>
